@@ -1,0 +1,36 @@
+import React, { useState } from 'react';
+
+const OCRViewer = () => {
+  const [extractedText, setExtractedText] = useState('');
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:5000/ocr", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      setExtractedText(data.text);
+    } catch (error) {
+      console.error("OCR failed:", error);
+    }
+  };
+
+  return (
+    <div className="p-4">
+      <input type="file" onChange={handleFileUpload} />
+      <div className="mt-4 whitespace-pre-wrap">
+        {extractedText || "Upload an image to extract text."}
+      </div>
+    </div>
+  );
+};
+
+export default OCRViewer;
